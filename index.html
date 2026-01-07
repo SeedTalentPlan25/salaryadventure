@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>冒險者登錄：楓葉傳說</title>
+    <title>冒險者登錄：薪轉傳說</title>
     <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
     <style>
         :root {
-            /* 楓之谷/像素遊戲風格配色 */
             --bg-color: #2D3748;      
             --panel-bg: #F0FDF4;      
             --main-green: #48bb78;    
             --dark-green: #2f855a;    
             --wood-brown: #78350f;    
-            --highlight: #ecc94b;     
             --btn-bg: #ffffff;        
             --btn-hover: #dcfce7;     
         }
@@ -30,18 +30,11 @@
             background-position: 0 0, 10px 10px;
         }
 
-        h2, h3 { 
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.1); 
-            letter-spacing: 1px;
-        }
-        
         .scroll-box {
             background: var(--panel-bg);
             border: 4px solid var(--wood-brown);
-            box-shadow: 
-                inset 0 0 0 4px #86efac, 
-                8px 8px 0px rgba(0,0,0,0.3);
-            min-height: 600px;
+            box-shadow: inset 0 0 0 4px #86efac, 8px 8px 0px rgba(0,0,0,0.3);
+            min-height: 650px; /* 稍微加高一點以免內容太擠 */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -50,36 +43,15 @@
             border-radius: 8px;
         }
 
-        /* 進度條容器 - 確保 ID 存在 */
         .progress-track {
             position: absolute; top: 0; left: 0; width: 100%; height: 8px;
             background: #cbd5e0; z-index: 10; border-bottom: 2px solid var(--wood-brown);
         }
         .progress-fill {
             height: 100%;
-            background: repeating-linear-gradient(
-                45deg,
-                #48bb78,
-                #48bb78 10px,
-                #38a169 10px,
-                #38a169 20px
-            );
+            background: repeating-linear-gradient(45deg, #48bb78, #48bb78 10px, #38a169 10px, #38a169 20px);
             width: 0%;
             transition: width 0.3s steps(10);
-        }
-
-        /* 鎖定畫面 - 包含結果顯示區 */
-        #locked-screen {
-            display: none; 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(45, 55, 72, 0.98); 
-            z-index: 50; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            text-align: center; 
-            color: white;
-            padding: 2rem;
         }
 
         .option-btn {
@@ -95,13 +67,8 @@
             box-shadow: 0 4px 0 var(--dark-green);
             font-size: 1.1rem;
         }
-        .option-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 var(--dark-green);
-        }
-        .option-btn:hover {
-            background-color: var(--btn-hover);
-        }
+        .option-btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--dark-green); }
+        .option-btn:hover { background-color: var(--btn-hover); }
         
         .selected {
             background-color: #22c55e !important;
@@ -110,8 +77,7 @@
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 4px 0 #14532d;
         }
         .selected::after {
-            content: '◄'; 
-            position: absolute; right: 15px; top: 50%; 
+            content: '◄'; position: absolute; right: 15px; top: 50%; 
             transform: translateY(-50%); color: #fff; font-size: 1.2rem;
         }
 
@@ -123,45 +89,27 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .story-text {
-            font-size: 1.4rem;
-            line-height: 1.8;
-            color: #2f855a;
-            text-align: center;
-            border: 2px dashed var(--main-green);
-            background-color: rgba(255, 255, 255, 0.6);
-            padding: 2rem 1rem;
-            margin: 1rem 0;
-            border-radius: 8px;
+        .story-img {
+            width: 100%; max-width: 400px; height: auto; margin: 0 auto 1rem auto;
+            border-radius: 0.5rem; border: 4px solid var(--wood-brown);
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
         }
 
-        input[type="text"] {
-            background: #fff;
-            border: 3px solid var(--main-green);
-            color: var(--wood-brown);
-            font-family: 'DotGothic16', sans-serif;
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+        /* 按鈕區塊修正 */
+        .nav-buttons { 
+            display: flex; 
+            gap: 12px; /* 間距縮小一點點 */
+            margin-top: auto; /* 推到底部 */
+            padding-top: 15px; 
+            border-top: 2px dashed #cbd5e0; 
+            width: 100%;
         }
-        input[type="text"]:focus {
-            border-color: #15803d;
-            outline: none;
-            background-color: #f0fdf4;
-        }
-        
-        .other-input {
-            background: transparent; border: none; border-bottom: 2px dashed var(--main-green); 
-            color: var(--wood-brown); width: 80%; margin-left: 10px; font-size: 1rem;
-            font-family: 'DotGothic16', sans-serif;
-        }
-        .other-input:focus { outline: none; border-bottom-style: solid; }
-        ::placeholder { color: #a0aec0; }
-
-        .nav-buttons { display: flex; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 2px dashed #cbd5e0; }
         
         .btn-prev { 
             background: #e2e8f0; border: 2px solid #a0aec0; color: #4a5568; 
             font-family: 'DotGothic16', sans-serif; letter-spacing: 1px;
             box-shadow: 0 4px 0 #718096;
+            width: 30%; /* 固定 30% 寬度 */
         }
         .btn-prev:active { transform: translateY(4px); box-shadow: none; }
         
@@ -170,9 +118,24 @@
             color: white; 
             font-family: 'DotGothic16', sans-serif; font-weight: 700; letter-spacing: 2px;
             box-shadow: 0 4px 0 var(--dark-green);
+            flex: 1; /* 自動填滿剩餘空間，解決跑版問題 */
         }
         .btn-next:active { transform: translateY(4px); box-shadow: none; }
         .btn-next:hover { background-color: #38a169; }
+
+        /* 結果卡片樣式 */
+        .result-card-container {
+            background: white; border: 4px solid #2f855a; border-radius: 12px;
+            padding: 20px; text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-width: 350px; margin: 0 auto; position: relative;
+        }
+        .result-card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px dashed #cbd5e0; padding-bottom: 10px; margin-bottom: 15px;
+        }
+        .tag-badge { background: #2f855a; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
+        .main-visual { width: 100%; height: auto; border-radius: 8px; border: 3px solid #48bb78; margin-bottom: 15px; object-fit: cover; }
+        .stats-box { background: #f0fdf4; border: 2px solid #9ae6b4; border-radius: 8px; padding: 10px; font-size: 0.9rem; text-align: left; color: #276749; margin-top: 10px; }
 
     </style>
 </head>
@@ -180,93 +143,78 @@
 
     <div class="max-w-2xl w-full scroll-box p-6 md:p-12">
         
-        <div id="locked-screen">
-            <h2 class="text-3xl text-yellow-400 mb-2">❖ 冒險者已登錄 ❖</h2>
-            <p class="text-gray-300 mb-6 text-sm">公會名冊上已有你的名字，以下是你的冒險紀錄：</p>
-            
-            <div class="bg-white p-6 border-4 border-green-600 shadow-xl rounded-lg relative text-gray-800 w-full max-w-md">
-                <p class="text-green-600 text-sm mb-2 font-bold tracking-widest">ADVENTURER CARD</p>
-                <h3 id="locked-result-title" class="text-4xl font-bold text-green-800 mb-4">讀取中...</h3>
-                <p id="locked-result-desc" class="text-gray-700 text-lg leading-relaxed"></p>
-            </div>
+        <div id="locked-screen" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(45, 55, 72, 0.98); z-index: 50; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 2rem;">
+            <h2 class="text-3xl text-yellow-400 mb-4">❖ 冒險者已登錄 ❖</h2>
+            <p class="text-gray-300 mb-6 text-sm">你的公會證書如下：</p>
+            <div id="locked-card-area"></div>
         </div>
 
-        <div class="progress-track" id="progress-container">
-            <div class="progress-fill" id="progress-bar"></div>
-        </div>
+        <div class="progress-track" id="progress-container"><div class="progress-fill" id="progress-bar"></div></div>
 
         <form id="rpgForm" class="flex-grow flex flex-col justify-center mt-6" onsubmit="event.preventDefault(); return false;">
-            <input type="hidden" id="bank_name" name="bank_name">
-            <input type="hidden" id="role" name="role">
-            <input type="hidden" id="level" name="level">
-            <input type="hidden" id="action_first" name="action_first">
-            <input type="hidden" id="free_trans" name="free_trans">
-            <input type="hidden" id="town_count" name="town_count">
-            <input type="hidden" id="q7_final" name="q7_final"> 
-            <input type="hidden" id="q8_final" name="q8_final">
-            <input type="hidden" id="info_source" name="info_source">
-            <input type="hidden" id="wish" name="wish">
+            <input type="hidden" id="bank_name" name="bank_name"><input type="hidden" id="role" name="role"><input type="hidden" id="level" name="level"><input type="hidden" id="action_first" name="action_first"><input type="hidden" id="free_trans" name="free_trans"><input type="hidden" id="town_count" name="town_count"><input type="hidden" id="q7_final" name="q7_final"><input type="hidden" id="q8_final" name="q8_final"><input type="hidden" id="info_source" name="info_source"><input type="hidden" id="wish" name="wish">
 
             <div class="step-slide active" id="step-1">
                 <div class="text-sm text-green-600 mb-2 tracking-widest">任務 1/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold leading-relaxed">請輸入你的<span class="text-orange-600">薪資入帳聖地</span><br>(薪轉銀行)</h2>
-                <input type="text" oninput="saveInput('bank_name', this.value)" class="w-full p-4 text-xl rounded-lg" placeholder="例如：玉山神殿...">
+                <h2 class="text-3xl text-green-900 mb-6 font-bold leading-relaxed">請輸入你的<span class="text-orange-600">薪資入帳聖地</span><br>(薪轉銀行)</h2>
+                <p class="text-sm text-gray-500 mb-2">👇 有固定薪轉戶請填寫：</p>
+                <input type="text" onchange="handleBankInput(this.value)" class="w-full p-4 text-xl rounded-lg mb-6" placeholder="例如：玉山銀行、郵局、第一銀行...">
+                <div class="flex items-center mb-6">
+                    <div class="flex-grow border-t-2 border-dashed border-green-300"></div><span class="flex-shrink-0 mx-4 text-green-600 text-sm">或是選擇你的冒險狀態</span><div class="flex-grow border-t-2 border-dashed border-green-300"></div>
+                </div>
+                <div class="space-y-3">
+                    <div class="option-btn" onclick="handleRoleSelect(this, '學院見習生(學生)')">🎓 學院見習生 (在學學生)</div>
+                    <div class="option-btn" onclick="handleRoleSelect(this, '自由傭兵(領現金)')">💰 自由傭兵 (領取現金/打工)</div>
+                    <div class="option-btn" onclick="handleRoleSelect(this, '浪人劍客(待業中)')">🍃 浪人劍客 (待業/轉職中)</div>
+                    <div class="option-btn" onclick="handleRoleSelect(this, '獨行俠(SOHO/接案)')">🗡️ 獨行俠 (SOHO/接案/非固定薪轉)</div>
+                </div>
             </div>
 
             <div class="step-slide" id="step-2">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 2/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">你的角色身份是？</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 2/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold">你的角色身份是？</h2>
                 <div class="space-y-4">
                     <div class="option-btn" onclick="selectSingle(this, 'step-2', 'role', '戰士(男)')">🛡️ 戰士 (男)</div>
                     <div class="option-btn" onclick="selectSingle(this, 'step-2', 'role', '遊俠(女)')">🏹 遊俠 (女)</div>
                     <div class="option-btn" onclick="selectSingle(this, 'step-2', 'role', '神秘人')">🔮 神秘人</div>
                 </div>
             </div>
-
             <div class="step-slide" id="step-3">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 3/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">目前你的冒險等級是？</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 3/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold">目前你的冒險等級是？</h2>
                 <div class="space-y-3">
-                    <div class="option-btn" onclick="selectSingle(this, 'step-3', 'level', '新手 18-25')">新手冒險者 (18-25歲)</div>
-                    <div class="option-btn" onclick="selectSingle(this, 'step-3', 'level', '初級 26-35')">初級冒險者 (26-35歲)</div>
-                    <div class="option-btn" onclick="selectSingle(this, 'step-3', 'level', '中級 36-45')">中級冒險者 (36-45歲)</div>
-                    <div class="option-btn" onclick="selectSingle(this, 'step-3', 'level', '高級 46+')">高級冒險者 (46歲以上)</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-3', 'level', '新手 18-25')">新手冒險者 18-25 歲</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-3', 'level', '初級 26-35')">初級冒險者 26-35 歲</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-3', 'level', '中級 36-45')">中級冒險者 36-45 歲</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-3', 'level', '高級 46+')">高級冒險者 46+ 歲</div>
                 </div>
             </div>
-
             <div class="step-slide text-center" id="story-1">
-                <h2 class="text-2xl text-orange-700 mb-4 font-bold">領薪日的儀式</h2>
-                <div class="story-text">「叮咚！本月的金幣已入帳。<br>面對這一袋沉甸甸的金幣，<br>你會怎麼做？」</div>
+                <h2 class="text-2xl text-orange-700 mb-4 font-bold">第一章｜領薪日的儀式 💰</h2>
+                <img src="./images/s1.png" alt="領薪日插圖" class="story-img">
+                <div class="story-text" id="s1-text"></div>
             </div>
-
             <div class="step-slide" id="step-4">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 4/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">你的第一個行動是？</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 4/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold">你對金幣的第一個行動是？</h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="selectSingle(this, 'step-4', 'action_first', '留原地')">留在原地（原帳戶）不動</div>
-                    <div class="option-btn" onclick="selectSingle(this, 'step-4', 'action_first', '轉出')">啟動傳送陣（轉出至其他銀行）</div>
-                    <div class="option-btn" onclick="selectSingle(this, 'step-4', 'action_first', '領現消費')">換成物資（領現金/直接消費）</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-4', 'action_first', '轉出')">啟動傳送陣（轉出至其他常用的銀行）</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-4', 'action_first', '領現消費')">換成物資（領現金或直接扣卡消費）</div>
                 </div>
             </div>
-
             <div class="step-slide" id="step-5">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 5/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">你會使用銀行提供的<br>「傳送門」（免費跨轉）嗎？</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 5/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold">你會使用銀行提供的<br>「傳送門」（免費跨轉）嗎？</h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="selectSingle(this, 'step-5', 'free_trans', '當然')">當然！每一滴魔力都要用在刀口上</div>
                     <div class="option-btn" onclick="selectSingle(this, 'step-5', 'free_trans', '偶爾')">偶爾，看心情使用</div>
                     <div class="option-btn" onclick="selectSingle(this, 'step-5', 'free_trans', '從不')">從不，我習慣把金幣留在原地</div>
                 </div>
             </div>
-
             <div class="step-slide text-center" id="story-2">
                 <h2 class="text-2xl text-orange-700 mb-4 font-bold">回首過往</h2>
+                <img src="./images/s2.png" alt="回首過往插圖" class="story-img">
                 <div class="story-text">「你忽然回頭看，發現自己過去曾在不同聖地留下足跡。<br>每一座城鎮都有你的金幣，<br>承載著你過往的冒險經驗。」</div>
             </div>
-
             <div class="step-slide" id="step-6">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 6/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">你目前掌握的城鎮數量<br>（帳戶數）約為？</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 6/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold">你目前掌握的城鎮數量<br>（銀行帳戶數）約為？</h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="selectSingle(this, 'step-6', 'town_count', '1座')">1 座城鎮 (集中)</div>
                     <div class="option-btn" onclick="selectSingle(this, 'step-6', 'town_count', '2-3座')">2–3 座城鎮 (核心)</div>
@@ -274,15 +222,13 @@
                     <div class="option-btn" onclick="selectSingle(this, 'step-6', 'town_count', '5座以上')">5 座以上 (廣闊)</div>
                 </div>
             </div>
-
             <div class="step-slide text-center" id="story-3">
-                <h2 class="text-2xl text-orange-700 mb-4 font-bold">金幣的用途</h2>
+                <h2 class="text-2xl text-orange-700 mb-4 font-bold">第二章｜金幣的用途 🏦</h2>
+                <img src="./images/s3.png" alt="金幣用途插圖" class="story-img">
                 <div class="story-text">「面對手中金幣，<br>你的策略是什麼？」</div>
             </div>
-
             <div class="step-slide" id="step-7">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 7/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold" id="q7-title">金幣主要用於？</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 7/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold" id="q7-title">金幣主要用於？</h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="toggleMulti(this, 'q7_final', '儲存寶藏')">儲存寶藏（高利活存／定期定額）</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q7_final', '日常補給')">日常補給（生活消費／信用卡帳單）</div>
@@ -291,106 +237,100 @@
                     <div class="option-btn" onclick="toggleMulti(this, 'q7_final', '備戰金庫')">備戰金庫（緊急預備金）</div>
                 </div>
             </div>
-
             <div class="step-slide text-center" id="story-4">
-                <h2 class="text-2xl text-orange-700 mb-4 font-bold">抉擇的背後</h2>
+                <h2 class="text-2xl text-orange-700 mb-4 font-bold">第三章｜抉擇的背後 🏛️</h2>
+                <img src="./images/s4.png" alt="抉擇背後插圖" class="story-img">
                 <div class="story-text">「每一位冒險者的行動，<br>都有其深意...」</div>
             </div>
-
             <div class="step-slide" id="step-8-1">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 8/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">留在該銀行的原因是？<br>(可複選)</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 8/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold" id="q8-1-title">使用薪資入帳聖地的原因？<br>(可複選)</h2>
                 <div class="space-y-3">
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '專屬寶物')">專屬寶物：利率比其他銀行高</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '專屬寶物')">專屬寶物：薪轉戶利率比其他銀行高</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '傳送便捷')">傳送便捷：免費跨行轉帳／提款</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '深度綁定')">深度綁定：貸款/證券都在同一地</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '深度綁定')">深度綁定：房貸/證券等全都在同一地</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '自動扣費')">自動扣費魔法：水電/卡費自動扣</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', 'App介面')">App 魔法介面易操作</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', 'App介面')">App 魔法介面易操作：資產分析好用</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '實體便利')">實體據點便利：ATM/分行多</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '金幣分流')">金幣分流策略：專門存儲用</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '慣性魔法')">慣性魔法：懶得轉帳</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '其他')">
-                        其他：<input type="text" class="other-input" placeholder="請輸入..." onclick="event.stopPropagation(); this.parentElement.click();">
-                    </div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '金幣分流')">金幣分流策略：專門存儲，與日常分開</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '慣性魔法')">慣性魔法：習慣留下金幣，懶得轉</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '其他')">其他：<input type="text" class="other-input" placeholder="請輸入..." onclick="event.stopPropagation(); this.parentElement.click();"></div>
                 </div>
             </div>
-
             <div class="step-slide" id="step-8-2">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 8/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">轉去其他銀行的原因是？<br>(可複選)</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 8/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold">選擇轉移到其他據點的原因？<br>(可複選)</h2>
                 <div class="space-y-3">
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '高利寶藏')">高利寶藏：其他銀行利率更高</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '回饋魔法')">回饋魔法：信用卡回饋較多</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '支付生態')">支付生態：行動支付整合方便</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '主帳戶習慣')">主帳戶習慣：入職前已使用</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '投資介面')">投資介面：操作更順暢</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '實體便利')">實體便利：靠近住家/公司</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', 'App體驗')">App 體驗佳：操作直覺</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '帳戶分流')">帳戶分流：生活費與薪資分開</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '其他')">
-                        其他：<input type="text" class="other-input" placeholder="請輸入..." onclick="event.stopPropagation(); this.parentElement.click();">
-                    </div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '高利寶藏')">高利寶藏：其他銀行利率更吸引人</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '回饋魔法')">回饋魔法：信用卡回饋多於其他銀行</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '支付生態')">支付生態：行動支付整合更方便</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '主帳戶習慣')">主帳戶習慣：入職前已使用，懶得改變</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '投資介面')">投資介面：證券/基金操作更順暢</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '實體便利')">實體便利：ATM/分行靠近住家或公司</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', 'App體驗')">App 體驗佳：操作直覺、容易管理</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '帳戶分流')">帳戶分流：生活費與薪資分開管理</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '其他')">其他：<input type="text" class="other-input" placeholder="請輸入..." onclick="event.stopPropagation(); this.parentElement.click();"></div>
                 </div>
             </div>
-
             <div class="step-slide" id="step-8-3">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 8/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">不使用薪資入帳聖地的原因？<br>(可複選)</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 8/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold" id="q8-3-title">不使用薪資入帳聖地的原因？<br>(可複選)</h2>
                 <div class="space-y-3">
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '被迫契約')">被迫簽下契約：公司強制</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '被迫契約')">被迫簽下契約：公司強制，非必要不會選</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '寶藏平凡')">寶藏平凡：利率/手續費不吸引</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '魔法卷軸難懂')">魔法卷軸難懂：介面老舊</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '魔法卷軸難懂')">魔法卷軸難懂：介面老舊、操作不順</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '據點偏遠')">據點偏遠：ATM/分行太少</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '怕金幣流失')">怕金幣流失：避免亂花</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '不需多據點')">不需多據點：只需一個帳戶</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '其他')">
-                        其他：<input type="text" class="other-input" placeholder="請輸入..." onclick="event.stopPropagation(); this.parentElement.click();">
-                    </div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '怕金幣流失')">怕金幣流失：習慣把錢轉走，避免亂花</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '不需多據點')">不需多據點：只需要一個帳戶</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '其他')">其他：<input type="text" class="other-input" placeholder="請輸入..." onclick="event.stopPropagation(); this.parentElement.click();"></div>
                 </div>
             </div>
-
             <div class="step-slide text-center" id="story-5">
-                <h2 class="text-2xl text-orange-700 mb-4 font-bold">情報來源</h2>
+                <h2 class="text-2xl text-orange-700 mb-4 font-bold">第四章｜情報來源 📜</h2>
+                <img src="./images/s5.png" alt="情報來源插圖" class="story-img">
                 <div class="story-text">「在森林裡，<br>你是如何得知金幣增值的祕密？」</div>
             </div>
-
             <div class="step-slide" id="step-9">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 9/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">你從哪裡得知銀行的薪轉福利？<br>(可複選)</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 9/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold">你從哪裡得知銀行的薪轉福利？<br>(可複選)</h2>
                 <div class="space-y-3">
-                    <div class="option-btn" onclick="toggleMulti(this, 'info_source', '公會告示')">公會告示牌（HR／入職手冊）</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'info_source', '冒險者公報')">冒險者公報（社群／PTT／Dcard）</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'info_source', '公會告示')">公會告示牌（公司 HR／入職手冊）</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'info_source', '冒險者公報')">冒險者公報（社群媒體／PTT／Dcard）</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'info_source', '路人耳語')">路人耳語（親友介紹）</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'info_source', '魔法推播')">魔法推播（銀行 App／簡訊）</div>
-                    <div class="option-btn" onclick="toggleMulti(this, 'info_source', '其他')">
-                        其他：<input type="text" class="other-input" placeholder="請輸入..." onclick="event.stopPropagation(); this.parentElement.click();">
-                    </div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'info_source', '魔法推播')">魔法推播（銀行 App 通知／簡訊）</div>
+                    <div class="option-btn" onclick="toggleMulti(this, 'info_source', '其他')">其他：<input type="text" class="other-input" placeholder="請輸入..." onclick="event.stopPropagation(); this.parentElement.click();"></div>
                 </div>
             </div>
-
             <div class="step-slide text-center" id="story-6">
-                <h2 class="text-2xl text-orange-700 mb-4 font-bold">夢幻補給品</h2>
+                <h2 class="text-2xl text-orange-700 mb-4 font-bold">終章｜夢幻補給品 ✨</h2>
+                <img src="./images/s6.png" alt="許願插圖" class="story-img">
                 <div class="story-text">「如果可以許願，<br>你最希望金幣聖地施展哪種神秘加持？」</div>
             </div>
-
             <div class="step-slide" id="step-10">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 10/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">你最心動的薪轉優惠？</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 10/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold">你最心動的薪轉優惠？</h2>
                 <div class="space-y-3">
-                    <div class="option-btn" onclick="selectSingle(this, 'step-10', 'wish', '財力倍增')">財力倍增 (高存款利率)</div>
-                    <div class="option-btn" onclick="selectSingle(this, 'step-10', 'wish', '無限傳送')">無限傳送 (免手續費)</div>
-                    <div class="option-btn" onclick="selectSingle(this, 'step-10', 'wish', '消費返利')">消費返利 (現金回饋)</div>
-                    <div class="option-btn" onclick="selectSingle(this, 'step-10', 'wish', '貸款特權')">貸款特權 (低利貸款)</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-10', 'wish', '財力倍增')">財力倍增 (更高的存款利率)</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-10', 'wish', '無限傳送')">無限傳送 (更多免手續費次數)</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-10', 'wish', '消費返利')">消費返利 (指定通路高額回饋)</div>
+                    <div class="option-btn" onclick="selectSingle(this, 'step-10', 'wish', '貸款特權')">貸款特權 (低利率信貸或房貸)</div>
                 </div>
             </div>
         </form>
 
         <div class="step-slide text-center" id="step-result" style="display: none;">
             <h2 class="text-4xl text-green-800 mb-6 font-bold" id="result-header">❖ 冒險結局揭曉 ❖</h2>
-            <div class="bg-white p-8 border-4 border-green-600 shadow-xl rounded-lg relative">
-                <p class="text-gray-500 mb-4">根據你的選擇，你的冒險風格為...</p>
-                <h3 id="result-title" class="text-5xl font-bold text-green-700 mb-6">計算中...</h3>
-                <p id="result-desc" class="text-gray-700 text-lg leading-relaxed"></p>
+            <div class="flex flex-col items-center">
+                <div id="capture-area" class="result-card-container">
+                    <div class="result-card-header">
+                        <span class="text-sm text-green-700 font-bold">冒險者公會認證</span>
+                        <span class="tag-badge">#薪轉傳說</span>
+                    </div>
+                    <h3 id="card-title" class="text-3xl font-bold text-green-900 mb-2">計算中...</h3>
+                    <img id="card-image" src="" alt="角色圖" class="main-visual">
+                    <div class="stats-box">
+                        <p id="card-desc" class="leading-relaxed">描述載入中...</p>
+                    </div>
+                    <div class="mt-4 text-xs text-gray-400 border-t pt-2">@薪轉傳說 - 2026 冒險者普查</div>
+                </div>
+                <button onclick="downloadCard()" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 flex items-center gap-2">
+                    📥 下載冒險證書
+                </button>
             </div>
         </div>
 
@@ -403,241 +343,102 @@
 
     <script>
         // ⚠️⚠️⚠️ 務必換成你「新部署」後的 Google Apps Script 網址 ⚠️⚠️⚠️
-        const SCRIPT_URL = "https://script.google.com/macros/s/你的網址/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDNhzrMdraxLs5gQ_41ftlcxnsgeg4vjdOJle21tHGBQi7G8bioH1pRuuYcd_rIJJH/exec";
+
+        const RESULT_IMAGES = {
+            "金幣守護者": "./images/h1.png",      
+            "聰明的策略家": "./images/h2.png",
+            "行動快速的弓箭手": "./images/h3.png",
+            "隨遇而安的旅人": "./images/h4.jpg" // 這裡保持 jpg，請確認圖片檔案真的是 jpg
+        };
 
         let currentStepId = "step-1";
         let historyStack = [];
         let multiSelections = {};
         const startTime = new Date().getTime();
+        let isHypothetical = false; 
 
-        // 頁面載入：檢查是否有存檔紀錄
         window.onload = function() {
             const savedResult = localStorage.getItem('adventurer_result');
             const isRegistered = localStorage.getItem('adventurer_registered') === 'true';
 
             if (isRegistered && savedResult) {
                 const data = JSON.parse(savedResult);
+                showResultScreen(data.persona, data.desc, data.imgUrl, true);
                 
-                // 顯示鎖定畫面
                 const lockedScreen = document.getElementById('locked-screen');
+                const lockedArea = document.getElementById('locked-card-area');
                 lockedScreen.style.display = 'flex';
-                
-                // 填入舊資料到鎖定畫面的卡片中
-                document.getElementById('locked-result-title').innerText = data.persona;
-                document.getElementById('locked-result-desc').innerText = data.desc;
-
-                // 隱藏表單
-                document.getElementById('rpgForm').style.display = 'none';
-                document.getElementById('nav-area').style.display = 'none';
-                document.getElementById('progress-container').style.display = 'none';
+                const cardHTML = document.getElementById('capture-area').outerHTML;
+                lockedArea.innerHTML = cardHTML;
             } else {
                 updateButtons();
                 updateProgressBar();
             }
         };
 
-        // 顯示結果畫面的安全函式
-        function showResultScreen(persona, desc, isRevisit) {
-            function safeHide(id) {
-                const el = document.getElementById(id);
-                if (el) el.style.display = 'none';
-            }
+        function downloadCard() {
+            const element = document.getElementById("capture-area");
+            html2canvas(element, { scale: 2, backgroundColor: "#ffffff", useCORS: true }).then(canvas => {
+                const link = document.createElement("a");
+                link.download = "我的冒險證書.png";
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+        }
 
-            safeHide('rpgForm');
-            safeHide('nav-area');
-            safeHide('progress-container');
-            safeHide('locked-screen'); 
-            
+        function showResultScreen(persona, desc, imgUrl, isRevisit) {
+            function safeHide(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+            safeHide('rpgForm'); safeHide('nav-area'); safeHide('progress-container'); safeHide('locked-screen');
             const resultSlide = document.getElementById('step-result');
-            if (resultSlide) {
-                resultSlide.classList.add('active');
-                resultSlide.style.display = 'block';
-            }
+            if (resultSlide) { resultSlide.classList.add('active'); resultSlide.style.display = 'block'; }
+            document.getElementById('card-title').innerText = persona;
+            document.getElementById('card-desc').innerText = desc;
+            const cardImg = document.getElementById('card-image');
+            if(cardImg && imgUrl) { cardImg.src = imgUrl; }
+            if(isRevisit && document.getElementById('result-header')) { document.getElementById('result-header').innerText = "❖ 冒險紀錄已存檔 ❖"; }
+        }
+
+        function handleBankInput(val) { saveInput('bank_name', val); isHypothetical = false; goNext(); }
+        function handleRoleSelect(el, role) { let container = document.getElementById('step-1'); let opts = container.querySelectorAll('.option-btn'); opts.forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); document.getElementById('bank_name').value = role; isHypothetical = true; setTimeout(() => goNext(), 300); }
+        function saveInput(field, val) { document.getElementById(field).value = val; }
+        function selectSingle(el, stepId, field, value) { let container = document.getElementById(stepId); let opts = container.querySelectorAll('.option-btn'); opts.forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); document.getElementById(field).value = value; setTimeout(() => goNext(), 300); }
+        function toggleMulti(el, field, value) { if (!multiSelections[field]) multiSelections[field] = []; let input = el.querySelector('input'); let storedValue = value; if (input && value === '其他') { let text = input.value.trim(); storedValue = text ? "其他: " + text : "其他"; input.oninput = function() { let newText = this.value.trim(); let newStored = newText ? "其他: " + newText : "其他"; let index = multiSelections[field].findIndex(v => v.startsWith("其他")); if (index !== -1) multiSelections[field][index] = newStored; document.getElementById(field).value = multiSelections[field].join(", "); }; } let existingIndex = multiSelections[field].findIndex(v => v === value || (value === '其他' && v.startsWith('其他'))); if (existingIndex !== -1) { multiSelections[field].splice(existingIndex, 1); el.classList.remove('selected'); } else { multiSelections[field].push(storedValue); el.classList.add('selected'); } document.getElementById(field).value = multiSelections[field].join(", "); }
+        function updateHypotheticalTexts() { const s1Text = document.getElementById('s1-text'); if (s1Text) { if (isHypothetical) { s1Text.innerHTML = '「叮咚！本月的金幣已入帳。<br><span class="text-sm text-green-600 block mt-2">請想像你未來獲得了第一份薪資轉帳</span><br>面對這一袋沉甸甸的金幣，你會怎麼做？」'; } else { s1Text.innerHTML = '「叮咚！本月的金幣已入帳。<br>面對這一袋沉甸甸的金幣，你會怎麼做？」'; } } const q81Title = document.getElementById('q8-1-title'); if (q81Title) { q81Title.innerText = isHypothetical ? "願意留在該薪轉聖地的未來考量原因？" : "使用薪資入帳聖地的原因？(可複選)"; } const q83Title = document.getElementById('q8-3-title'); if (q83Title) { q83Title.innerText = isHypothetical ? "不打算使用薪資入帳聖地的原因？" : "不使用薪資入帳聖地的原因？(可複選)"; } }
+        function goNext() { if (!validateCurrentStep()) return; updateHypotheticalTexts(); let nextStepId = ""; if (currentStepId === 'step-1') nextStepId = 'step-2'; else if (currentStepId === 'step-2') nextStepId = 'step-3'; else if (currentStepId === 'step-3') nextStepId = 'story-1'; else if (currentStepId === 'story-1') nextStepId = 'step-4'; else if (currentStepId === 'step-4') nextStepId = 'step-5'; else if (currentStepId === 'step-5') nextStepId = 'story-2'; else if (currentStepId === 'story-2') nextStepId = 'step-6'; else if (currentStepId === 'step-6') nextStepId = 'story-3'; else if (currentStepId === 'story-3') { let action = document.getElementById('action_first').value; let title = document.getElementById('q7-title'); if (action === '留原地') title.innerText = "留在原地的金幣，主要用於？"; else if (action === '轉出') title.innerText = "轉出的金幣，主要用於？"; else title.innerText = "換成物資的金幣，主要用於？"; nextStepId = 'step-7'; } else if (currentStepId === 'step-7') nextStepId = 'story-4'; else if (currentStepId === 'story-4') { let action = document.getElementById('action_first').value; multiSelections['q8_final'] = []; document.getElementById('q8_final').value = ""; document.querySelectorAll('.step-slide[id^="step-8"] .option-btn').forEach(b => b.classList.remove('selected')); if (action === '留原地') nextStepId = 'step-8-1'; else if (action === '轉出') nextStepId = 'step-8-2'; else nextStepId = 'step-8-3'; } else if (currentStepId.startsWith('step-8')) nextStepId = 'story-5'; else if (currentStepId === 'story-5') nextStepId = 'step-9'; else if (currentStepId === 'step-9') nextStepId = 'story-6'; else if (currentStepId === 'story-6') nextStepId = 'step-10'; else if (currentStepId === 'step-10') { calculateAndSubmit(); return; } historyStack.push(currentStepId); switchSlide(nextStepId); }
+        function goBack() { if (historyStack.length === 0) return; let prevStepId = historyStack.pop(); switchSlide(prevStepId); }
+        function switchSlide(targetId) { document.querySelectorAll('.step-slide').forEach(el => el.classList.remove('active')); document.getElementById(targetId).classList.add('active'); currentStepId = targetId; updateButtons(); updateProgressBar(); }
+        function updateProgressBar() { const steps = ['step-1','step-2','step-3','story-1','step-4','step-5','story-2','step-6','story-3','step-7','story-4','step-8-1','story-5','step-9','story-6','step-10','step-result']; let index = steps.findIndex(s => s === currentStepId || (currentStepId.startsWith('step-8') && s==='step-8-1')); if(index === -1) index = 8; let percent = ((index + 1) / steps.length) * 100; const bar = document.getElementById('progress-bar'); if(bar) bar.style.width = percent + '%'; }
+        
+        // 修正後的按鈕邏輯
+        function updateButtons() { 
+            const btnPrev = document.getElementById('btn-prev'); 
+            const btnNext = document.getElementById('btn-next'); 
             
-            document.getElementById('result-title').innerText = persona;
-            document.getElementById('result-desc').innerText = desc;
+            if (historyStack.length === 0) { 
+                btnPrev.style.display = 'none'; // 隱藏第一頁的返回鈕
+            } else { 
+                btnPrev.style.display = 'block'; 
+            } 
 
-            if(isRevisit && document.getElementById('result-header')) {
-                document.getElementById('result-header').innerText = "❖ 冒險紀錄已存檔 ❖";
-            }
-        }
-
-        function saveInput(field, val) {
-            document.getElementById(field).value = val;
-        }
-
-        function selectSingle(el, stepId, field, value) {
-            let container = document.getElementById(stepId);
-            let opts = container.querySelectorAll('.option-btn');
-            opts.forEach(opt => opt.classList.remove('selected'));
-            
-            el.classList.add('selected');
-            document.getElementById(field).value = value;
-            setTimeout(() => goNext(), 300);
-        }
-
-        function toggleMulti(el, field, value) {
-            if (!multiSelections[field]) multiSelections[field] = [];
-            
-            let input = el.querySelector('input');
-            let storedValue = value;
-            if (input && value === '其他') {
-                let text = input.value.trim();
-                storedValue = text ? "其他: " + text : "其他";
-                input.oninput = function() {
-                    let newText = this.value.trim();
-                    let newStored = newText ? "其他: " + newText : "其他";
-                    let index = multiSelections[field].findIndex(v => v.startsWith("其他"));
-                    if (index !== -1) multiSelections[field][index] = newStored;
-                    document.getElementById(field).value = multiSelections[field].join(", ");
-                };
-            }
-
-            let existingIndex = multiSelections[field].findIndex(v => v === value || (value === '其他' && v.startsWith('其他')));
-            
-            if (existingIndex !== -1) {
-                multiSelections[field].splice(existingIndex, 1);
-                el.classList.remove('selected');
-            } else {
-                multiSelections[field].push(storedValue);
-                el.classList.add('selected');
-            }
-            document.getElementById(field).value = multiSelections[field].join(", ");
-        }
-
-        function goNext() {
-            if (!validateCurrentStep()) return;
-
-            let nextStepId = "";
-            if (currentStepId === 'step-1') nextStepId = 'step-2';
-            else if (currentStepId === 'step-2') nextStepId = 'step-3';
-            else if (currentStepId === 'step-3') nextStepId = 'story-1';
-            else if (currentStepId === 'story-1') nextStepId = 'step-4';
-            else if (currentStepId === 'step-4') nextStepId = 'step-5';
-            else if (currentStepId === 'step-5') nextStepId = 'story-2';
-            else if (currentStepId === 'story-2') nextStepId = 'step-6';
-            else if (currentStepId === 'step-6') nextStepId = 'story-3';
-            
-            // Q7 分支
-            else if (currentStepId === 'story-3') {
-                let action = document.getElementById('action_first').value;
-                let title = document.getElementById('q7-title');
-                if (action === '留原地') title.innerText = "留在原地的金幣，主要用於？";
-                else if (action === '轉出') title.innerText = "轉出的金幣，主要用於？";
-                else title.innerText = "換成物資的金幣，主要用於？";
-                nextStepId = 'step-7';
-            }
-
-            else if (currentStepId === 'step-7') nextStepId = 'story-4';
-
-            // Q8 分支 (防呆檢查)
-            else if (currentStepId === 'story-4') {
-                let action = document.getElementById('action_first').value;
-                multiSelections['q8_final'] = [];
-                document.getElementById('q8_final').value = "";
-                // 清除所有 Q8 選擇
-                document.querySelectorAll('.step-slide[id^="step-8"] .option-btn').forEach(b => b.classList.remove('selected'));
-
-                if (action === '留原地') nextStepId = 'step-8-1';
-                else if (action === '轉出') nextStepId = 'step-8-2';
-                else nextStepId = 'step-8-3';
-            }
-
-            else if (currentStepId.startsWith('step-8')) nextStepId = 'story-5';
-            else if (currentStepId === 'story-5') nextStepId = 'step-9';
-            else if (currentStepId === 'step-9') nextStepId = 'story-6';
-            else if (currentStepId === 'story-6') nextStepId = 'step-10';
-            
-            else if (currentStepId === 'step-10') {
-                calculateAndSubmit();
-                return;
-            }
-
-            historyStack.push(currentStepId);
-            switchSlide(nextStepId);
-        }
-
-        function goBack() {
-            if (historyStack.length === 0) return;
-            let prevStepId = historyStack.pop();
-            switchSlide(prevStepId);
-        }
-
-        function switchSlide(targetId) {
-            document.querySelectorAll('.step-slide').forEach(el => el.classList.remove('active'));
-            document.getElementById(targetId).classList.add('active');
-            currentStepId = targetId;
-            updateButtons();
-            updateProgressBar();
-        }
-
-        function updateProgressBar() {
-            const steps = ['step-1','step-2','step-3','story-1','step-4','step-5','story-2','step-6','story-3','step-7','story-4','step-8-1','story-5','step-9','story-6','step-10','step-result'];
-            let index = steps.findIndex(s => s === currentStepId || (currentStepId.startsWith('step-8') && s==='step-8-1'));
-            if(index === -1) index = 8; 
-            let percent = ((index + 1) / steps.length) * 100;
-            const bar = document.getElementById('progress-bar');
-            if(bar) bar.style.width = percent + '%';
-        }
-
-        function updateButtons() {
-            const btnPrev = document.getElementById('btn-prev');
-            const btnNext = document.getElementById('btn-next');
-
-            if (historyStack.length === 0) {
-                btnPrev.classList.add('hidden');
-                btnNext.classList.remove('w-2/3');
-                btnNext.classList.add('w-full');
-            } else {
-                btnPrev.classList.remove('hidden');
-                btnNext.classList.remove('w-full');
-                btnNext.classList.add('w-2/3');
-            }
-
-            if (currentStepId.startsWith('story-')) {
-                btnNext.innerText = "繼續旅程 ➤";
-            } else if (currentStepId === 'step-10') {
-                btnNext.innerText = "完成登錄 ✨";
-                btnNext.classList.add('bg-green-600');
+            if (currentStepId.startsWith('story-')) { 
+                btnNext.innerText = "繼續旅程 ➤"; 
+            } else if (currentStepId === 'step-10') { 
+                btnNext.innerText = "完成登錄 ✨"; 
+                btnNext.classList.add('bg-green-600'); 
                 btnNext.style.background = "linear-gradient(to bottom, #15803d, #14532d)"; 
-                btnNext.style.borderColor = "#22c55e";
-            } else {
-                btnNext.innerText = "繼續冒險 ➤";
-                btnNext.style.background = "";
-                btnNext.style.borderColor = "";
-            }
+                btnNext.style.borderColor = "#22c55e"; 
+            } else { 
+                btnNext.innerText = "繼續冒險 ➤"; 
+                btnNext.style.background = ""; 
+                btnNext.style.borderColor = ""; 
+            } 
         }
 
-        function validateCurrentStep() {
-            if (currentStepId.startsWith('story-')) return true;
-
-            let valid = false;
-            try {
-                if (currentStepId === 'step-1') valid = !!document.getElementById('bank_name').value;
-                else if (currentStepId === 'step-2') valid = !!document.getElementById('role').value;
-                else if (currentStepId === 'step-3') valid = !!document.getElementById('level').value;
-                else if (currentStepId === 'step-4') valid = !!document.getElementById('action_first').value;
-                else if (currentStepId === 'step-5') valid = !!document.getElementById('free_trans').value;
-                else if (currentStepId === 'step-6') valid = !!document.getElementById('town_count').value;
-                else if (currentStepId === 'step-7') valid = !!document.getElementById('q7_final').value;
-                else if (currentStepId.startsWith('step-8')) valid = !!document.getElementById('q8_final').value;
-                else if (currentStepId === 'step-9') valid = !!document.getElementById('info_source').value;
-                else if (currentStepId === 'step-10') valid = !!document.getElementById('wish').value;
-            } catch(e) {
-                console.log("Validation skip: " + e);
-                valid = true;
-            }
-
-            if (!valid) alert("請完成此任務再繼續！");
-            return valid;
-        }
+        function validateCurrentStep() { if (currentStepId.startsWith('story-')) return true; let valid = false; try { if (currentStepId === 'step-1') valid = !!document.getElementById('bank_name').value; else if (currentStepId === 'step-2') valid = !!document.getElementById('role').value; else if (currentStepId === 'step-3') valid = !!document.getElementById('level').value; else if (currentStepId === 'step-4') valid = !!document.getElementById('action_first').value; else if (currentStepId === 'step-5') valid = !!document.getElementById('free_trans').value; else if (currentStepId === 'step-6') valid = !!document.getElementById('town_count').value; else if (currentStepId === 'step-7') valid = !!document.getElementById('q7_final').value; else if (currentStepId.startsWith('step-8')) valid = !!document.getElementById('q8_final').value; else if (currentStepId === 'step-9') valid = !!document.getElementById('info_source').value; else if (currentStepId === 'step-10') valid = !!document.getElementById('wish').value; } catch(e) { valid = true; } if (!valid) alert("請完成此任務再繼續！"); return valid; }
 
         function calculateAndSubmit() {
-            if (SCRIPT_URL.includes("你的網址")) {
-                alert("錯誤：請填入正確的 Apps Script 網址！");
-                return;
-            }
-
+            if (SCRIPT_URL.includes("你的網址")) { alert("錯誤：請填入正確的 Apps Script 網址！"); return; }
             try {
                 let persona = "隨遇而安的旅人";
                 const action = document.getElementById('action_first').value;
@@ -657,9 +458,11 @@
                 if(persona.includes("弓箭手")) desc = "重視效率與使用體驗。你的行動如風一般迅速，任何卡頓或繁瑣的流程都無法阻擋你的腳步。";
                 if(persona.includes("旅人")) desc = "對金融操作參與度低。金幣對你來說只是身外之物，自由自在的體驗才是冒險的真諦。";
 
-                showResultScreen(persona, desc, false);
+                const imgUrl = RESULT_IMAGES[persona] || "";
+                
+                showResultScreen(persona, desc, imgUrl, false);
 
-                const resultData = { persona: persona, desc: desc };
+                const resultData = { persona: persona, desc: desc, imgUrl: imgUrl };
                 localStorage.setItem('adventurer_result', JSON.stringify(resultData));
                 localStorage.setItem('adventurer_registered', 'true');
 
@@ -677,9 +480,7 @@
                     body: JSON.stringify(dataToSend)
                 })
                 .then(() => { console.log("Data sent"); })
-                .catch(err => {
-                    console.error("Fetch error:", err);
-                });
+                .catch(err => { console.error("Fetch error:", err); });
 
             } catch (e) {
                 alert("發生未預期的錯誤：" + e.message);
