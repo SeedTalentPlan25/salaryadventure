@@ -156,17 +156,22 @@
 
             <div class="step-slide active" id="step-1">
                 <div class="text-sm text-green-600 mb-2 tracking-widest">任務 1/10</div>
-                <h2 class="text-3xl text-green-900 mb-6 font-bold leading-relaxed">請輸入你的<span class="text-orange-600">薪資入帳聖地</span><br>(薪轉銀行)</h2>
+                <h2 class="text-3xl text-green-900 mb-6 font-bold leading-relaxed">請輸入你的<span class="text-orange-600">薪資入帳聖地</span></h2>
                 <p class="text-sm text-gray-500 mb-2">👇 有固定薪轉戶請填寫：</p>
-                <input type="text" onchange="handleBankInput(this.value)" class="w-full p-4 text-xl rounded-lg mb-6" placeholder="例如：玉山銀行、郵局、第一銀行...">
-                <div class="flex items-center mb-6">
-                    <div class="flex-grow border-t-2 border-dashed border-green-300"></div><span class="flex-shrink-0 mx-4 text-green-600 text-sm">或是選擇你的冒險狀態</span><div class="flex-grow border-t-2 border-dashed border-green-300"></div>
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="bank_input_field" class="w-full p-4 text-xl rounded-lg" placeholder="例如：玉山銀行...">
+                    <button type="button" onclick="handleManualInput()" class="bg-orange-500 text-white px-6 rounded-lg font-bold">確認</button>
                 </div>
-                <div class="space-y-3">
-                    <div class="option-btn" onclick="handleRoleSelect(this, '學院見習生(學生)')">🎓 學院見習生 (在學學生)</div>
-                    <div class="option-btn" onclick="handleRoleSelect(this, '自由傭兵(領現金)')">💰 自由傭兵 (領取現金/打工)</div>
-                    <div class="option-btn" onclick="handleRoleSelect(this, '浪人劍客(待業中)')">🍃 浪人劍客 (待業/轉職中)</div>
-                    <div class="option-btn" onclick="handleRoleSelect(this, '獨行俠(SOHO/接案)')">🗡️ 獨行俠 (SOHO/接案/非固定薪轉)</div>
+                <div class="flex items-center mb-6">
+                    <div class="flex-grow border-t-2 border-dashed border-green-300"></div>
+                    <span class="flex-shrink-0 mx-4 text-green-600 text-sm">或是選擇冒險狀態</span>
+                    <div class="flex-grow border-t-2 border-dashed border-green-300"></div>
+                </div>
+                <div class="space-y-3" id="status-options">
+                    <div class="option-btn" onclick="handleStatusSelect(this, '學院見習生(學生)')">🎓 學院見習生 (在學學生)</div>
+                    <div class="option-btn" onclick="handleStatusSelect(this, '自由傭兵(領現金)')">💰 自由傭兵 (領取現金/打工)</div>
+                    <div class="option-btn" onclick="handleStatusSelect(this, '浪人劍客(待業中)')">🍃 浪人劍客 (待業/轉職中)</div>
+                    <div class="option-btn" onclick="handleStatusSelect(this, '獨行俠(SOHO/接案)')">🗡️ 獨行俠 (SOHO/接案)</div>
                 </div>
             </div>
 
@@ -228,7 +233,7 @@
                 <div class="story-text">「面對手中金幣，<br>你的策略是什麼？」</div>
             </div>
             <div class="step-slide" id="step-7">
-                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 7/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold" id="q7-title">金幣主要用於？</h2>
+                <div class="text-sm text-green-600 mb-2 tracking-widest">任務 7/10</div><h2 class="text-3xl text-green-900 mb-8 font-bold" id="q7-title">金幣主要用於？<br>(可複選)</h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="toggleMulti(this, 'q7_final', '儲存寶藏')">儲存寶藏（高利活存／定期定額）</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q7_final', '日常補給')">日常補給（生活消費／信用卡帳單）</div>
@@ -490,3 +495,4 @@
     </script>
 </body>
 </html>
+
