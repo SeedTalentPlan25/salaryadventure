@@ -196,7 +196,8 @@
         .btn-next:active { transform: translateY(4px); box-shadow: none; }
         .btn-next:hover { background-color: #38a169; }
 
-        /* 結果卡片樣式 */
+
+/* === 修正後的結果卡片樣式 (針對 html2canvas 優化) === */
         .result-card-container {
             background: white;
             border: 4px solid #2f855a;
@@ -204,25 +205,59 @@
             padding: 20px;
             text-align: center;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            max-width: 350px;
+            /* 這裡務必給定明確寬度，避免 html2canvas 計算錯誤 */
+            width: 350px; 
+            max-width: 350px; 
             margin: 0 auto;
             position: relative;
+            /* 修正字體渲染問題 */
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
         }
         .result-card-header {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px dashed #cbd5e0; padding-bottom: 10px; margin-bottom: 15px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 2px dashed #cbd5e0; 
+            padding-bottom: 10px; 
+            margin-bottom: 15px;
+            /* 強制指定高度與寬度，避免擠壓 */
+            width: 100%;
+            height: 40px; 
         }
+        /* 左側標題強制不換行 */
+        .result-card-header .header-title {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        /* 右側 Badge 強制不換行並靠右 */
         .tag-badge {
-            background: #2f855a; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;
+            background: #2f855a; 
+            color: white; 
+            padding: 4px 10px; /*稍微增加 padding */
+            border-radius: 12px; 
+            font-size: 0.8rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-left: 10px;
         }
         .main-visual {
-            width: 100%; height: auto; border-radius: 8px; border: 3px solid #48bb78;
-            margin-bottom: 15px; object-fit: cover;
+            width: 100%; 
+            height: auto; 
+            /* 重要：設定最小高度或比例，防止圖片未載入時高度塌陷 */
+            min-height: 250px; 
+            aspect-ratio: 1 / 1; /* 假設圖片是正方形，可依需求調整 */
+            border-radius: 8px; 
+            border: 3px solid #48bb78;
+            margin-bottom: 15px; 
+            object-fit: cover;
+            background-color: #f0fdf4; /* 圖片載入前的背景色 */
         }
         .stats-box {
             background: #f0fdf4; border: 2px solid #9ae6b4; border-radius: 8px; padding: 10px;
             font-size: 0.9rem; text-align: left; color: #276749; margin-top: 10px;
         }
+        /* ========================================== */
 
     </style>
 </head>
@@ -460,12 +495,12 @@
             </div>
         </form>
 
-        <div class="step-slide text-center" id="step-result" style="display: none;">
+<div class="step-slide text-center" id="step-result" style="display: none;">
             <h2 class="text-4xl text-green-800 mb-6 font-bold" id="result-header">❖ 冒險結局揭曉 ❖</h2>
             <div class="flex flex-col items-center">
                 <div id="capture-area" class="result-card-container">
                     <div class="result-card-header">
-                        <span class="text-sm text-green-700 font-bold">冒險者公會認證</span>
+                        <span class="text-sm text-green-700 font-bold header-title">冒險者公會認證</span>
                         <span class="tag-badge">#薪轉傳說</span>
                     </div>
                     <h3 id="card-title" class="text-3xl font-bold text-green-900 mb-2">計算中...</h3>
@@ -475,7 +510,7 @@
                     </div>
                     <div class="mt-4 text-xs text-gray-400 border-t pt-2">@薪轉傳說 - 2026 冒險者普查</div>
                 </div>
-                <button onclick="downloadCard()" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 flex items-center gap-2">
+                <button id="downloadBtn" onclick="downloadCard()" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 flex items-center gap-2">
                     📥 下載冒險證書
                 </button>
             </div>
@@ -524,14 +559,44 @@
             }
         };
 
+// 🌟 修正後的下載函式：增加緩衝時間與防呆
         function downloadCard() {
             const element = document.getElementById("capture-area");
-            html2canvas(element, { scale: 2, backgroundColor: "#ffffff", useCORS: true }).then(canvas => {
-                const link = document.createElement("a");
-                link.download = "我的冒險證書.png";
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
+            const btn = document.getElementById("downloadBtn");
+            const originalText = btn.innerHTML;
+
+            // 1. 鎖定按鈕並更改文字提示
+            btn.disabled = true;
+            btn.innerHTML = "⏳ 生成證書中...";
+            btn.classList.remove('hover:scale-105'); // 移除 hover 動畫避免干擾
+
+            // 2. 設定延遲，確保圖片與字體已完全載入並渲染 (500ms 是一個經驗值)
+            setTimeout(() => {
+                html2canvas(element, { 
+                    scale: 3, // 提高解析度讓文字更清晰
+                    backgroundColor: "#ffffff", 
+                    useCORS: true, // 允許跨域圖片
+                    logging: false // 關閉除錯訊息
+                }).then(canvas => {
+                    // 3. 執行下載
+                    const link = document.createElement("a");
+                    link.download = "我的冒險證書.png";
+                    link.href = canvas.toDataURL("image/png");
+                    link.click();
+
+                    // 4. 恢復按鈕狀態
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    btn.classList.add('hover:scale-105');
+                }).catch(err => {
+                    console.error("截圖失敗:", err);
+                    alert("證書生成失敗，請稍後再試。");
+                    // 發生錯誤也要恢復按鈕
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    btn.classList.add('hover:scale-105');
+                });
+            }, 800); // 延遲 800 毫秒 (0.8秒) 執行
         }
 
         function showResultScreen(persona, desc, imgUrl, isRevisit) {
@@ -685,3 +750,4 @@
     </script>
 </body>
 </html>
+
