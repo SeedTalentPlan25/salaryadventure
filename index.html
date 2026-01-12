@@ -233,7 +233,6 @@
         <div id="locked-screen" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(45, 55, 72, 0.98); z-index: 50; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 2rem;">
             <h2 class="text-3xl text-yellow-400 mb-4">❖ 冒險者已登錄 ❖</h2>
             <p class="text-gray-300 mb-6 text-sm">你的公會證書如下：</p>
-            
             <div id="locked-card-area"></div>
         </div>
 
@@ -355,7 +354,7 @@
 
             <div class="step-slide" id="step-7">
                 <div class="text-sm text-green-600 mb-2 tracking-widest">任務 7/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold" id="q7-title">金幣主要用於？</h2>
+                <h2 class="text-3xl text-green-900 mb-8 font-bold" id="q7-title">金幣主要用於？<br><span class="text-sm text-gray-500">(可複選)</span></h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="toggleMulti(this, 'q7_final', '儲存寶藏')">儲存寶藏（高利活存／定期定額）</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q7_final', '日常補給')">日常補給（生活消費／信用卡帳單）</div>
@@ -373,7 +372,7 @@
 
             <div class="step-slide" id="step-8-1">
                 <div class="text-sm text-green-600 mb-2 tracking-widest">任務 8/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold" id="q8-1-title">使用薪資入帳聖地的原因？<br>(可複選)</h2>
+                <h2 class="text-3xl text-green-900 mb-8 font-bold" id="q8-1-title">使用薪資入帳聖地的原因？<br><span class="text-sm text-gray-500">(可複選)</span></h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '專屬寶物')">專屬寶物：薪轉戶利率比其他銀行高</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '傳送便捷')">傳送便捷：免費跨行轉帳／提款</div>
@@ -391,7 +390,7 @@
 
             <div class="step-slide" id="step-8-2">
                 <div class="text-sm text-green-600 mb-2 tracking-widest">任務 8/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">選擇轉移到其他據點的原因？<br>(可複選)</h2>
+                <h2 class="text-3xl text-green-900 mb-8 font-bold">選擇轉移到其他據點的原因？<br><span class="text-sm text-gray-500">(可複選)</span></h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '高利寶藏')">高利寶藏：其他銀行利率更吸引人</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '回饋魔法')">回饋魔法：信用卡回饋多於其他銀行</div>
@@ -409,7 +408,7 @@
 
             <div class="step-slide" id="step-8-3">
                 <div class="text-sm text-green-600 mb-2 tracking-widest">任務 8/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold" id="q8-3-title">不使用薪資入帳聖地的原因？<br>(可複選)</h2>
+                <h2 class="text-3xl text-green-900 mb-8 font-bold" id="q8-3-title">不使用薪資入帳聖地的原因？<br><span class="text-sm text-gray-500">(可複選)</span></h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '被迫契約')">被迫簽下契約：公司強制，非必要不會選</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'q8_final', '寶藏平凡')">寶藏平凡：利率/手續費不吸引</div>
@@ -431,7 +430,7 @@
 
             <div class="step-slide" id="step-9">
                 <div class="text-sm text-green-600 mb-2 tracking-widest">任務 9/10</div>
-                <h2 class="text-3xl text-green-900 mb-8 font-bold">你從哪裡得知銀行的薪轉福利？<br>(可複選)</h2>
+                <h2 class="text-3xl text-green-900 mb-8 font-bold">你從哪裡得知銀行的薪轉福利？<br><span class="text-sm text-gray-500">(可複選)</span></h2>
                 <div class="space-y-3">
                     <div class="option-btn" onclick="toggleMulti(this, 'info_source', '公會告示')">公會告示牌（公司 HR／入職手冊）</div>
                     <div class="option-btn" onclick="toggleMulti(this, 'info_source', '冒險者公報')">冒險者公報（社群媒體／PTT／Dcard）</div>
@@ -580,8 +579,29 @@
         function saveInput(field, val) { document.getElementById(field).value = val; }
         function selectSingle(el, stepId, field, value) { let container = document.getElementById(stepId); let opts = container.querySelectorAll('.option-btn'); opts.forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); document.getElementById(field).value = value; setTimeout(() => goNext(), 300); }
         function toggleMulti(el, field, value) { if (!multiSelections[field]) multiSelections[field] = []; let input = el.querySelector('input'); let storedValue = value; if (input && value === '其他') { let text = input.value.trim(); storedValue = text ? "其他: " + text : "其他"; input.oninput = function() { let newText = this.value.trim(); let newStored = newText ? "其他: " + newText : "其他"; let index = multiSelections[field].findIndex(v => v.startsWith("其他")); if (index !== -1) multiSelections[field][index] = newStored; document.getElementById(field).value = multiSelections[field].join(", "); }; } let existingIndex = multiSelections[field].findIndex(v => v === value || (value === '其他' && v.startsWith('其他'))); if (existingIndex !== -1) { multiSelections[field].splice(existingIndex, 1); el.classList.remove('selected'); } else { multiSelections[field].push(storedValue); el.classList.add('selected'); } document.getElementById(field).value = multiSelections[field].join(", "); }
-        function updateHypotheticalTexts() { const s1Text = document.getElementById('s1-text'); if (s1Text) { if (isHypothetical) { s1Text.innerHTML = '「叮咚！本月的金幣已入帳。<br><span class="text-sm text-green-600 block mt-2">(假設情境：請想像你未來獲得了第一份薪資轉帳)</span><br>面對這一袋沉甸甸的金幣，你會怎麼做？」'; } else { s1Text.innerHTML = '「叮咚！本月的金幣已入帳。<br>面對這一袋沉甸甸的金幣，你會怎麼做？」'; } } const q81Title = document.getElementById('q8-1-title'); if (q81Title) { q81Title.innerText = isHypothetical ? "願意留在該薪轉聖地的未來考量原因？" : "使用薪資入帳聖地的原因？(可複選)"; } const q83Title = document.getElementById('q8-3-title'); if (q83Title) { q83Title.innerText = isHypothetical ? "不打算使用薪資入帳聖地的原因？" : "不使用薪資入帳聖地的原因？(可複選)"; } }
-        function goNext() { if (!validateCurrentStep()) return; updateHypotheticalTexts(); let nextStepId = ""; if (currentStepId === 'step-1') nextStepId = 'step-2'; else if (currentStepId === 'step-2') nextStepId = 'step-3'; else if (currentStepId === 'step-3') nextStepId = 'story-1'; else if (currentStepId === 'story-1') nextStepId = 'step-4'; else if (currentStepId === 'step-4') nextStepId = 'step-5'; else if (currentStepId === 'step-5') nextStepId = 'story-2'; else if (currentStepId === 'story-2') nextStepId = 'step-6'; else if (currentStepId === 'step-6') nextStepId = 'story-3'; else if (currentStepId === 'story-3') { let action = document.getElementById('action_first').value; let title = document.getElementById('q7-title'); if (action === '留原地') title.innerText = "留在原地的金幣，主要用於？"; else if (action === '轉出') title.innerText = "轉出的金幣，主要用於？"; else title.innerText = "換成物資的金幣，主要用於？"; nextStepId = 'step-7'; } else if (currentStepId === 'step-7') nextStepId = 'story-4'; else if (currentStepId === 'story-4') { let action = document.getElementById('action_first').value; multiSelections['q8_final'] = []; document.getElementById('q8_final').value = ""; document.querySelectorAll('.step-slide[id^="step-8"] .option-btn').forEach(b => b.classList.remove('selected')); if (action === '留原地') nextStepId = 'step-8-1'; else if (action === '轉出') nextStepId = 'step-8-2'; else nextStepId = 'step-8-3'; } else if (currentStepId.startsWith('step-8')) nextStepId = 'story-5'; else if (currentStepId === 'story-5') nextStepId = 'step-9'; else if (currentStepId === 'step-9') nextStepId = 'story-6'; else if (currentStepId === 'story-6') nextStepId = 'step-10'; else if (currentStepId === 'step-10') { calculateAndSubmit(); return; } historyStack.push(currentStepId); switchSlide(nextStepId); }
+        
+        function updateHypotheticalTexts() {
+            const s1Text = document.getElementById('s1-text');
+            if (s1Text) {
+                if (isHypothetical) {
+                    s1Text.innerHTML = '「請想像你未來獲得了第一份薪資轉帳<br>叮咚！本月的金幣已入帳。<br>面對這一袋沉甸甸的金幣，你會怎麼做？」';
+                } else {
+                    s1Text.innerHTML = '「叮咚！本月的金幣已入帳。<br>面對這一袋沉甸甸的金幣，你會怎麼做？」';
+                }
+            }
+            
+            // 更新 Q8 和 Q8-3 的標題，保留 (可複選) 標示
+            const q81Title = document.getElementById('q8-1-title');
+            if (q81Title) { 
+                q81Title.innerHTML = (isHypothetical ? "未來願意留在該薪轉聖地的原因？" : "使用薪資入帳聖地的原因？") + '<br><span class="text-sm text-gray-500">(可複選)</span>'; 
+            }
+            const q83Title = document.getElementById('q8-3-title');
+            if (q83Title) { 
+                q83Title.innerHTML = (isHypothetical ? "未來不打算使用該薪資入帳聖地的原因？" : "不使用薪資入帳聖地的原因？") + '<br><span class="text-sm text-gray-500">(可複選)</span>'; 
+            }
+        }
+
+        function goNext() { if (!validateCurrentStep()) return; updateHypotheticalTexts(); let nextStepId = ""; if (currentStepId === 'step-1') nextStepId = 'step-2'; else if (currentStepId === 'step-2') nextStepId = 'step-3'; else if (currentStepId === 'step-3') nextStepId = 'story-1'; else if (currentStepId === 'story-1') nextStepId = 'step-4'; else if (currentStepId === 'step-4') nextStepId = 'step-5'; else if (currentStepId === 'step-5') nextStepId = 'story-2'; else if (currentStepId === 'story-2') nextStepId = 'step-6'; else if (currentStepId === 'step-6') nextStepId = 'story-3'; else if (currentStepId === 'story-3') { let action = document.getElementById('action_first').value; let title = document.getElementById('q7-title'); if (action === '留原地') title.innerHTML = "留在原地的金幣，主要用於？" + '<br><span class="text-sm text-gray-500">(可複選)</span>'; else if (action === '轉出') title.innerHTML = "轉出的金幣，主要用於？" + '<br><span class="text-sm text-gray-500">(可複選)</span>'; else title.innerHTML = "換成物資的金幣，主要用於？" + '<br><span class="text-sm text-gray-500">(可複選)</span>'; nextStepId = 'step-7'; } else if (currentStepId === 'step-7') nextStepId = 'story-4'; else if (currentStepId === 'story-4') { let action = document.getElementById('action_first').value; multiSelections['q8_final'] = []; document.getElementById('q8_final').value = ""; document.querySelectorAll('.step-slide[id^="step-8"] .option-btn').forEach(b => b.classList.remove('selected')); if (action === '留原地') nextStepId = 'step-8-1'; else if (action === '轉出') nextStepId = 'step-8-2'; else nextStepId = 'step-8-3'; } else if (currentStepId.startsWith('step-8')) nextStepId = 'story-5'; else if (currentStepId === 'story-5') nextStepId = 'step-9'; else if (currentStepId === 'step-9') nextStepId = 'story-6'; else if (currentStepId === 'story-6') nextStepId = 'step-10'; else if (currentStepId === 'step-10') { calculateAndSubmit(); return; } historyStack.push(currentStepId); switchSlide(nextStepId); }
         function goBack() { if (historyStack.length === 0) return; let prevStepId = historyStack.pop(); switchSlide(prevStepId); }
         function switchSlide(targetId) { document.querySelectorAll('.step-slide').forEach(el => el.classList.remove('active')); document.getElementById(targetId).classList.add('active'); currentStepId = targetId; updateButtons(); updateProgressBar(); }
         function updateProgressBar() { const steps = ['step-1','step-2','step-3','story-1','step-4','step-5','story-2','step-6','story-3','step-7','story-4','step-8-1','story-5','step-9','story-6','step-10','step-result']; let index = steps.findIndex(s => s === currentStepId || (currentStepId.startsWith('step-8') && s==='step-8-1')); if(index === -1) index = 8; let percent = ((index + 1) / steps.length) * 100; const bar = document.getElementById('progress-bar'); if(bar) bar.style.width = percent + '%'; }
