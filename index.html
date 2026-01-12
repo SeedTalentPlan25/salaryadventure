@@ -583,31 +583,49 @@
             }
         };
 
-// 修正後的下載函式：增加緩衝時間與防呆
+// 修正後的下載函式：使用 onclone 修正截圖垂直位置，不影響網頁顯示
         function downloadCard() {
             const element = document.getElementById("capture-area");
             const btn = document.getElementById("downloadBtn");
             const originalText = btn.innerHTML;
 
-            // 1. 鎖定按鈕，避免重複點擊
+            // 1. 鎖定按鈕
             btn.disabled = true;
             btn.innerHTML = "⏳ 生成證書中...";
             btn.classList.remove('hover:scale-105'); 
 
-            // 2. 設定延遲 (0.8秒)，確保圖片與排版已完全載入
+            // 2. 延遲 800ms 後截圖 (等待 CSS 渲染完成)
             setTimeout(() => {
                 html2canvas(element, { 
                     scale: 3, // 提高解析度
                     backgroundColor: "#ffffff", 
                     useCORS: true, 
-                    logging: false 
+                    logging: false,
+                    
+                    // ▼▼▼ 關鍵修正：只在截圖當下修改位置 ▼▼▼
+                    onclone: (clonedDoc) => {
+                        // 抓取「分身」裡的標題與標籤
+                        const clonedTitle = clonedDoc.querySelector('.header-title');
+                        const clonedBadge = clonedDoc.querySelector('.tag-badge');
+                        
+                        // 強制修改「分身」的垂直位置 (往上提 12px)
+                        // 您可以根據下載結果，微調這個 -12px 的數字
+                        if (clonedTitle) {
+                            clonedTitle.style.transform = 'translateY(-50%) translateY(-12px)'; 
+                        }
+                        if (clonedBadge) {
+                            clonedBadge.style.transform = 'translateY(-50%) translateY(-12px)';
+                        }
+                    }
+                    // ▲▲▲ 修正結束 ▲▲▲
+
                 }).then(canvas => {
                     const link = document.createElement("a");
                     link.download = "我的冒險證書.png";
                     link.href = canvas.toDataURL("image/png");
                     link.click();
 
-                    // 恢復按鈕
+                    // 4. 恢復按鈕
                     btn.disabled = false;
                     btn.innerHTML = originalText;
                     btn.classList.add('hover:scale-105');
@@ -772,5 +790,6 @@
     </script>
 </body>
 </html>
+
 
 
