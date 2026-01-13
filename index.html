@@ -551,20 +551,34 @@
         const startTime = new Date().getTime();
         let isHypothetical = false; 
 
-        // ▼▼▼ 修改 window.onload：舊用戶直接顯示結果頁，不再用鎖定畫面 ▼▼▼
+      // ▼▼▼ 修改 window.onload：強制使用最新的圖片路徑，解決舊資料緩存問題 ▼▼▼
         window.onload = function() {
             const savedResult = localStorage.getItem('adventurer_result');
             const isRegistered = localStorage.getItem('adventurer_registered') === 'true';
 
             if (isRegistered && savedResult) {
                 const data = JSON.parse(savedResult);
-                // 直接呼叫結果顯示函式，最後一個參數 true 代表是「重複訪客」
-                showResultScreen(data.persona, data.desc, data.imgUrl, true);
+                
+                // 🌟 關鍵修改：不使用舊資料裡的 imgUrl，而是用稱號去查最新的對應表
+                // 這樣就算 LocalStorage 存的是舊的 h2.png，這裡也會強制換成新的 r2.jpg
+                const currentImgUrl = RESULT_IMAGES[data.persona] || data.imgUrl;
+
+                // 呼叫顯示函式時，傳入最新的圖片路徑
+                showResultScreen(data.persona, data.desc, currentImgUrl, true);
+                
+                // 順便更新鎖定畫面的圖片 (如果有用的話)
+                const lockedImg = document.getElementById('locked-result-img'); 
+                // 注意：您之前的代碼有些版本用 locked-image-display，請確認您的 HTML ID 是哪一個
+                // 為了保險，我們嘗試抓取您截圖中的結構
+                const finalImg = document.getElementById('final-result-image');
+                if(finalImg) finalImg.src = currentImgUrl;
+
             } else {
                 updateButtons();
                 updateProgressBar();
             }
         };
+        // ▲▲▲ 修改結束 ▲▲▲
 
 function downloadCard() {
             const element = document.getElementById("capture-area");
@@ -888,6 +902,7 @@ function updateButtons() {
     </script>
 </body>
 </html>
+
 
 
 
