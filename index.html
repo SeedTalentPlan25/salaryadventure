@@ -287,11 +287,7 @@
 
     <div class="max-w-2xl w-full scroll-box p-6 md:p-12">
         
-        <div id="locked-screen" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(45, 55, 72, 0.98); z-index: 50; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 2rem;">
-            <h2 class="text-3xl text-yellow-400 mb-4">❖ 冒險者已登錄 ❖</h2>
-            <p class="text-gray-300 mb-6 text-sm">你的公會證書如下：</p>
-            <div id="locked-card-area"></div>
-        </div>
+
 
         <div class="progress-track" id="progress-container">
             <div class="progress-fill" id="progress-bar"></div>
@@ -311,33 +307,25 @@
 
             <div class="step-slide active" id="step-1">
                 <div class="text-sm text-green-600 mb-2 tracking-widest">任務 1/10</div>
-                <h2 class="text-3xl text-green-900 mb-6 font-bold leading-relaxed">請輸入你的<span class="text-orange-600">薪資入帳聖地</span><br>(薪轉銀行)</h2>
-                
+                <h2 class="text-3xl text-green-900 mb-6 font-bold leading-relaxed">請輸入你的<span class="text-orange-600">薪資入帳聖地</span></h2>
                 <p class="text-sm text-gray-500 mb-2">👇 有固定薪轉戶請填寫：</p>
-                <input type="text" id="bank_input_field" oninput="handleBankInput(this.value)" class="w-full p-4 text-xl rounded-lg mb-6" placeholder="例如：玉山銀行、郵局、第一銀行...">
-
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="bank_input_field" class="w-full p-4 text-xl rounded-lg" placeholder="例如：玉山銀行...">
+                    <button type="button" onclick="handleManualInput()" class="bg-orange-500 text-white px-6 rounded-lg font-bold">確認</button>
+                </div>
                 <div class="flex items-center mb-6">
                     <div class="flex-grow border-t-2 border-dashed border-green-300"></div>
-                    <span class="flex-shrink-0 mx-4 text-green-600 text-sm">或是選擇你的冒險狀態</span>
+                    <span class="flex-shrink-0 mx-4 text-green-600 text-sm">或是選擇冒險狀態</span>
                     <div class="flex-grow border-t-2 border-dashed border-green-300"></div>
                 </div>
-
-                <div class="space-y-3">
-                    <div class="option-btn" onclick="handleRoleSelect(this, '學院見習生(學生)')">
-                        🎓 學院見習生 (在學學生)
-                    </div>
-                    <div class="option-btn" onclick="handleRoleSelect(this, '自由傭兵(領現金)')">
-                        💰 自由傭兵 (領取現金/打工)
-                    </div>
-                    <div class="option-btn" onclick="handleRoleSelect(this, '浪人劍客(待業中)')">
-                        🍃 浪人劍客 (待業/轉職中)
-                    </div>
-                    <div class="option-btn" onclick="handleRoleSelect(this, '獨行俠(SOHO/接案)')">
-                        🗡️ 獨行俠 (SOHO/接案/非固定薪轉)
-                    </div>
+                <div class="space-y-3" id="status-options">
+                    <div class="option-btn" onclick="handleStatusSelect(this, '學院見習生(學生)')">🎓 學院見習生 (在學學生)</div>
+                    <div class="option-btn" onclick="handleStatusSelect(this, '自由傭兵(領現金)')">💰 自由傭兵 (領取現金/打工)</div>
+                    <div class="option-btn" onclick="handleStatusSelect(this, '浪人劍客(待業中)')">🍃 浪人劍客 (待業/轉職中)</div>
+                    <div class="option-btn" onclick="handleStatusSelect(this, '獨行俠(SOHO/接案)')">🗡️ 獨行俠 (SOHO/接案)</div>
                 </div>
             </div>
-
+            
             <div class="step-slide" id="step-2">
                 <div class="text-sm text-green-600 mb-2 tracking-widest">任務 2/10</div>
                 <h2 class="text-3xl text-green-900 mb-8 font-bold">你的角色身份是？</h2>
@@ -517,28 +505,27 @@
             </div>
         </form>
 
-<div class="step-slide text-center" id="step-result" style="display: none;">
-            <h2 class="text-4xl text-green-800 mb-6 font-bold" id="result-header">❖ 冒險結局揭曉 ❖</h2>
-            <div class="flex flex-col items-center">
                 
-                <div id="capture-area" class="result-card-container">
-                    <div class="result-card-header">
-                        <span class="text-sm text-green-700 font-bold header-title">冒險者公會認證</span>
-                        <span class="tag-badge">#薪轉傳說</span>
-                    </div>
-                    <h3 id="card-title" class="text-3xl font-bold text-green-900 mb-2">計算中...</h3>
-                    <img id="card-image" src="" alt="角色圖" class="main-visual">
-                    <div class="stats-box">
-                        <p id="card-desc" class="leading-relaxed">描述載入中...</p>
-                    </div>
-                    <div class="mt-4 text-xs text-gray-400 border-t pt-2">@薪轉傳說 - 2026 冒險者普查</div>
+<div class="step-slide text-center" id="step-result" style="display: none;">
+            <h2 class="text-4xl text-green-800 mb-2 font-bold" id="result-header">❖ 冒險結局揭曉 ❖</h2>
+            
+            <p id="result-subheader" class="text-xl text-green-700 mb-6 font-bold" style="display:none;">你的公會證書如下：</p>
+
+            <div class="flex flex-col items-center">
+                <div class="w-full max-w-[450px] mx-auto rounded-xl overflow-hidden shadow-lg">
+                    <img id="final-result-image" src="" alt="結果證書" class="w-full h-auto block">
                 </div>
 
-                <button id="downloadBtn" onclick="downloadCard()" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 flex items-center gap-2">
+                <button id="downloadBtn" onclick="downloadDirectImage()" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 flex items-center gap-2">
                     📥 下載冒險證書
+                </button>
+
+                <button onclick="shareResult()" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 flex items-center gap-2">
+                    🔗 分享給朋友
                 </button>
             </div>
         </div>
+                
 
         <div class="nav-buttons" id="nav-area">
             <button type="button" id="btn-prev" class="btn-prev w-1/3 py-3 rounded hidden" onclick="goBack()">↩ 休息</button>
@@ -552,10 +539,10 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzDNhzrMdraxLs5gQ_41ftlcxnsgeg4vjdOJle21tHGBQi7G8bioH1pRuuYcd_rIJJH/exec";
 
         const RESULT_IMAGES = {
-            "金幣守護者": "./images/h1.png",      
-            "聰明的策略家": "./images/h2.png",
-            "行動快速的弓箭手": "./images/h3.png",
-            "隨遇而安的旅人": "./images/h4.jpg" 
+            "金幣守護者": "./images/r1.jpg",      
+            "聰明的策略家": "./images/r2.jpg",
+            "行動快速的弓箭手": "./images/r3.jpg",
+            "隨遇而安的旅人": "./images/r4.jpg" 
         };
 
         let currentStepId = "step-1";
@@ -564,19 +551,15 @@
         const startTime = new Date().getTime();
         let isHypothetical = false; 
 
+        // ▼▼▼ 修改 window.onload：舊用戶直接顯示結果頁，不再用鎖定畫面 ▼▼▼
         window.onload = function() {
             const savedResult = localStorage.getItem('adventurer_result');
             const isRegistered = localStorage.getItem('adventurer_registered') === 'true';
 
             if (isRegistered && savedResult) {
                 const data = JSON.parse(savedResult);
+                // 直接呼叫結果顯示函式，最後一個參數 true 代表是「重複訪客」
                 showResultScreen(data.persona, data.desc, data.imgUrl, true);
-                
-                const lockedScreen = document.getElementById('locked-screen');
-                const lockedArea = document.getElementById('locked-card-area');
-                lockedScreen.style.display = 'flex';
-                const cardHTML = document.getElementById('capture-area').outerHTML;
-                lockedArea.innerHTML = cardHTML;
             } else {
                 updateButtons();
                 updateProgressBar();
@@ -638,35 +621,72 @@ function downloadCard() {
             }, 800); 
         }
 
+// ▼▼▼ 修改 showResultScreen：控制標題文字與小標題顯示 ▼▼▼
         function showResultScreen(persona, desc, imgUrl, isRevisit) {
             function safeHide(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
-            safeHide('rpgForm'); safeHide('nav-area'); safeHide('progress-container'); safeHide('locked-screen');
-            const resultSlide = document.getElementById('step-result');
-            if (resultSlide) { resultSlide.classList.add('active'); resultSlide.style.display = 'block'; }
-            document.getElementById('card-title').innerText = persona;
-            document.getElementById('card-desc').innerText = desc;
-            const cardImg = document.getElementById('card-image');
-            if(cardImg && imgUrl) { cardImg.src = imgUrl; }
-            if(isRevisit && document.getElementById('result-header')) { document.getElementById('result-header').innerText = "❖ 冒險紀錄已存檔 ❖"; }
-        }
+            
+            safeHide('rpgForm'); 
+            safeHide('nav-area'); 
+            safeHide('progress-container'); 
+            // locked-screen 已經被我們刪除了，所以不需要 hide 它
 
-        // 🌟 Q1 銀行輸入處理 (與按鈕互斥)
-        function handleBankInput(val) {
+            const resultSlide = document.getElementById('step-result');
+            if (resultSlide) { 
+                resultSlide.classList.add('active'); 
+                resultSlide.style.display = 'block'; 
+            }
+
+            const finalImg = document.getElementById('final-result-image');
+            if(finalImg && imgUrl) { 
+                finalImg.src = imgUrl; 
+            }
+
+            // 🌟 這裡控制文字變化 🌟
+            const header = document.getElementById('result-header');
+            const subHeader = document.getElementById('result-subheader');
+
+            if (isRevisit) {
+                // 如果是重複訪客 (Revisit)
+                if(header) header.innerText = "❖ 冒險者已登錄 ❖";
+                if(subHeader) subHeader.style.display = "block"; // 顯示小標題
+            } else {
+                // 如果是第一次測驗
+                if(header) header.innerText = "❖ 冒險結局揭曉 ❖";
+                if(subHeader) subHeader.style.display = "none"; // 隱藏小標題
+            }
+        }
+        // ▲▲▲ 修改結束 ▲▲▲
+
+       // ▼▼▼▼▼▼▼▼▼▼ 請用這段取代原本的 handleBankInput 與 handleRoleSelect ▼▼▼▼▼▼▼▼▼▼
+
+        // 🌟 新版 Q1：處理手動輸入銀行並按下「確認」
+        function handleManualInput() {
+            const inputField = document.getElementById('bank_input_field');
+            const val = inputField.value.trim();
+
+            if (!val) {
+                alert("請輸入銀行名稱後再按確認！");
+                return;
+            }
+
             saveInput('bank_name', val);
             isHypothetical = false; 
             
-            // 清除按鈕選取狀態
+            // 清除下方按鈕的選取狀態 (避免視覺混淆)
             let container = document.getElementById('step-1');
             let opts = container.querySelectorAll('.option-btn');
             opts.forEach(opt => opt.classList.remove('selected'));
+
+            // 直接進入下一步
+            goNext();
         }
 
-        // 🌟 Q1 角色選擇處理 (與輸入框互斥)
-        function handleRoleSelect(el, role) {
-            // 清空輸入框
+        // 🌟 新版 Q1：處理點擊下方冒險狀態按鈕
+        function handleStatusSelect(el, role) {
+            // 清空上方的輸入框
             document.getElementById('bank_input_field').value = '';
 
-            // 設定按鈕選取
+            // 設定按鈕選取視覺效果
             let container = document.getElementById('step-1');
             let opts = container.querySelectorAll('.option-btn');
             opts.forEach(opt => opt.classList.remove('selected'));
@@ -679,6 +699,8 @@ function downloadCard() {
             // 自動跳轉
             setTimeout(() => goNext(), 300);
         }
+
+    
 
         function saveInput(field, val) { document.getElementById(field).value = val; }
         function selectSingle(el, stepId, field, value) { let container = document.getElementById(stepId); let opts = container.querySelectorAll('.option-btn'); opts.forEach(opt => opt.classList.remove('selected')); el.classList.add('selected'); document.getElementById(field).value = value; setTimeout(() => goNext(), 300); }
@@ -710,16 +732,29 @@ function downloadCard() {
         function switchSlide(targetId) { document.querySelectorAll('.step-slide').forEach(el => el.classList.remove('active')); document.getElementById(targetId).classList.add('active'); currentStepId = targetId; updateButtons(); updateProgressBar(); }
         function updateProgressBar() { const steps = ['step-1','step-2','step-3','story-1','step-4','step-5','story-2','step-6','story-3','step-7','story-4','step-8-1','story-5','step-9','story-6','step-10','step-result']; let index = steps.findIndex(s => s === currentStepId || (currentStepId.startsWith('step-8') && s==='step-8-1')); if(index === -1) index = 8; let percent = ((index + 1) / steps.length) * 100; const bar = document.getElementById('progress-bar'); if(bar) bar.style.width = percent + '%'; }
         
-        function updateButtons() { 
+function updateButtons() { 
             const btnPrev = document.getElementById('btn-prev'); 
             const btnNext = document.getElementById('btn-next'); 
-            
+            const navArea = document.getElementById('nav-area'); // 取得下方的按鈕區塊
+
+            // 1. 如果是 Q1 (step-1) 或 結果頁 (step-result)，隱藏下方按鈕區
+            // (因為 Q1 有自己的確認按鈕，結果頁有下載按鈕)
+            if (currentStepId === 'step-1' || currentStepId === 'step-result') {
+                if (navArea) navArea.style.display = 'none';
+                return; // 直接結束，不執行後面的程式
+            } 
+
+            // 2. 關鍵修正：如果是其他頁面 (從 Q2 開始)，強制顯示按鈕區！
+            if (navArea) navArea.style.display = 'flex';
+
+            // 3. 設定「休息 (上一步)」按鈕顯示邏輯
             if (historyStack.length === 0) { 
                 btnPrev.style.display = 'none'; 
             } else { 
                 btnPrev.style.display = 'block'; 
             } 
 
+            // 4. 設定「繼續冒險 (下一步)」按鈕文字與樣式
             if (currentStepId.startsWith('story-')) { 
                 btnNext.innerText = "繼續旅程 ➤"; 
             } else if (currentStepId === 'step-10') { 
@@ -733,6 +768,70 @@ function downloadCard() {
                 btnNext.style.borderColor = ""; 
             } 
         }
+
+        // ▼▼▼ 補上這個函式：直接下載當前顯示的 JPG 圖片 ▼▼▼
+        function downloadDirectImage() {
+            // 1. 抓取目前顯示在螢幕上的那張結果圖
+            const imgElement = document.getElementById("final-result-image");
+            
+            if (!imgElement || !imgElement.src) {
+                alert("找不到證書圖片！");
+                return;
+            }
+
+            const imgUrl = imgElement.src;
+            
+            // 2. 建立一個暫時的下載連結
+            const link = document.createElement("a");
+            link.href = imgUrl;
+            link.download = "我的冒險證書.jpg"; // 設定下載後的檔名
+            
+            // 3. 觸發點擊下載
+            document.body.appendChild(link);
+            link.click();
+            
+            // 4. 清除暫存連結
+            document.body.removeChild(link);
+        }
+        // ▲▲▲ 補上結束 ▲▲▲
+
+        // ▼▼▼ 新增這裡：喚起系統原生分享選單 ▼▼▼
+        async function shareResult() {
+            // 1. 從 LocalStorage 撈取剛剛的測驗結果
+            const savedResult = localStorage.getItem('adventurer_result');
+            let persona = "冒險者"; // 預設值 (防呆)
+            
+            if (savedResult) {
+                const data = JSON.parse(savedResult);
+                persona = data.persona; // 抓取稱號，例如：金幣守護者
+            }
+
+            // 2. 設定要分享的內容
+            const shareData = {
+                title: '薪轉傳說：冒險者登錄', // 標題 (部分系統會顯示)
+                text: `我在薪轉傳說測驗中獲得了『${persona}』！面對金幣，你的選擇是...？快來測測你的冒險屬性吧！💰✨`, // 主要文案
+                url: window.location.href // 自動帶入目前的網站連結
+            };
+
+            // 3. 呼叫瀏覽器原生分享 (Web Share API)
+            try {
+                if (navigator.share) {
+                    // 如果手機/瀏覽器支援原生分享 (iOS/Android 大多支援)
+                    await navigator.share(shareData);
+                } else {
+                // 電腦版：複製到剪貼簿，並在 Alert 中顯示剛剛複製了什麼
+                const contentToCopy = `${shareData.text} ${shareData.url}`;
+                
+                await navigator.clipboard.writeText(contentToCopy);
+                
+                // ▼▼▼ 修改這裡：讓 Alert 顯示複製的詳細內容 ▼▼▼
+                alert("✅ 已複製以下內容到剪貼簿：\n\n" + contentToCopy + "\n\n現在可以去貼上分享囉！📋");
+            }                
+            } catch (err) {
+                console.log('使用者取消分享或發生錯誤', err);
+            }
+        }
+        // ▲▲▲ 新增結束 ▲▲▲
 
         function validateCurrentStep() { if (currentStepId.startsWith('story-')) return true; let valid = false; try { if (currentStepId === 'step-1') valid = !!document.getElementById('bank_name').value; else if (currentStepId === 'step-2') valid = !!document.getElementById('role').value; else if (currentStepId === 'step-3') valid = !!document.getElementById('level').value; else if (currentStepId === 'step-4') valid = !!document.getElementById('action_first').value; else if (currentStepId === 'step-5') valid = !!document.getElementById('free_trans').value; else if (currentStepId === 'step-6') valid = !!document.getElementById('town_count').value; else if (currentStepId === 'step-7') valid = !!document.getElementById('q7_final').value; else if (currentStepId.startsWith('step-8')) valid = !!document.getElementById('q8_final').value; else if (currentStepId === 'step-9') valid = !!document.getElementById('info_source').value; else if (currentStepId === 'step-10') valid = !!document.getElementById('wish').value; } catch(e) { valid = true; } if (!valid) alert("請完成此任務再繼續！"); return valid; }
 
@@ -789,6 +888,7 @@ function downloadCard() {
     </script>
 </body>
 </html>
+
 
 
 
