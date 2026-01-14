@@ -774,55 +774,82 @@ function downloadCard() {
         }
 
         function goNext() { 
+            // 1. 檢查當前步驟是否完成
             if (!validateCurrentStep()) return; 
+            
+            // 更新情境文字 (如果是 Q1 無薪轉的情境)
             updateHypotheticalTexts(); 
             
             let nextStepId = ""; 
             
-            // ▼▼▼ 修改這裡：加入 step-1 和 step-1-2 的邏輯 ▼▼▼
+            // === 邏輯判斷開始 ===
+            
             if (currentStepId === 'step-1') {
-                // 如果在 step-1 按下一步 (通常是被隱藏的，但防呆) -> 預設去 step-1-2
+                // 從 Q1 輸入 -> Q1-2 (雖然會被手動跳轉蓋過，但保留邏輯)
                 nextStepId = 'step-1-2'; 
-            } else if (currentStepId === 'step-1-2') {
+            } 
+            else if (currentStepId === 'step-1-2') {
                 // 從身分選擇 -> Q2
                 nextStepId = 'step-2';
             } 
-            // ▲▲▲ 修改結束 ▲▲▲
-            
             else if (currentStepId === 'step-2') nextStepId = 'step-3'; 
-            // ... (後面照舊: step-3 -> story-1 -> step-4 ...)
             else if (currentStepId === 'step-3') nextStepId = 'story-1'; 
             else if (currentStepId === 'story-1') nextStepId = 'step-4'; 
             else if (currentStepId === 'step-4') nextStepId = 'step-5'; 
             else if (currentStepId === 'step-5') nextStepId = 'story-2'; 
             else if (currentStepId === 'story-2') nextStepId = 'step-6'; 
             else if (currentStepId === 'step-6') nextStepId = 'story-3'; 
+            
             else if (currentStepId === 'story-3') { 
-                // ... (中間省略，保持原樣) ...
+                // 從 story-3 -> Q7 (順便換 Q7 標題)
                 let action = document.getElementById('action_first').value; 
                 let title = document.getElementById('q7-title'); 
-                if (action === '留原地') title.innerHTML = "留在原地的金幣，主要用於？" + '<br><span class="text-sm text-gray-500">(可複選)</span>'; 
-                else if (action === '轉出') title.innerHTML = "轉出的金幣，主要用於？" + '<br><span class="text-sm text-gray-500">(可複選)</span>'; 
-                else title.innerHTML = "換成物資的金幣，主要用於？" + '<br><span class="text-sm text-gray-500">(可複選)</span>'; 
+                
+                // 根據 Q4 選擇更換 Q7 標題
+                if (action === '留原地') {
+                    title.innerHTML = "留在原地的金幣，主要用於？" + '<br><span class="text-sm text-gray-500">(可複選)</span>'; 
+                } else if (action === '轉出') {
+                    title.innerHTML = "轉出的金幣，主要用於？" + '<br><span class="text-sm text-gray-500">(可複選)</span>'; 
+                } else {
+                    title.innerHTML = "換成物資的金幣，主要用於？" + '<br><span class="text-sm text-gray-500">(可複選)</span>'; 
+                }
                 nextStepId = 'step-7'; 
             } 
+            
             else if (currentStepId === 'step-7') nextStepId = 'story-4'; 
-            // ... (中間省略) ...
+            
+            // ▼▼▼ 這裡就是修正的關鍵點 ▼▼▼
+            else if (currentStepId === 'story-4') {
+                // 讀取 Q4 的選擇，決定要去 Q8 的哪一個版本
+                let action = document.getElementById('action_first').value;
+                
+                if (action === '留原地') {
+                    nextStepId = 'step-8-1'; // 分支 A
+                } else if (action === '轉出') {
+                    nextStepId = 'step-8-2'; // 分支 B
+                } else {
+                    nextStepId = 'step-8-3'; // 分支 C (領現/其他)
+                }
+            }
+            // ▲▲▲ 修正結束 ▲▲▲
+
+            // 處理 Q8 任何一個分支結束後 -> story-5
             else if (currentStepId.startsWith('step-8')) nextStepId = 'story-5'; 
+            
             else if (currentStepId === 'story-5') nextStepId = 'step-9'; 
             else if (currentStepId === 'step-9') nextStepId = 'story-6'; 
             else if (currentStepId === 'story-6') nextStepId = 'step-10'; 
             
-            // ▼▼▼ Q10 原本是 submit，現在也是，但邏輯改成單選後通常會自動送出 ▼▼▼
-            // 如果你是用 selectSingle 自動跳轉，這裡其實是備用
             else if (currentStepId === 'step-10') { 
                 calculateAndSubmit(); 
                 return; 
             } 
             
+            // 執行換頁
             historyStack.push(currentStepId); 
-            switchSlide(nextStepId); 
+            switchSlide(nextStepId);
         }
+        
         function goBack() { if (historyStack.length === 0) return; let prevStepId = historyStack.pop(); switchSlide(prevStepId); }
         function switchSlide(targetId) { document.querySelectorAll('.step-slide').forEach(el => el.classList.remove('active')); document.getElementById(targetId).classList.add('active'); currentStepId = targetId; updateButtons(); updateProgressBar(); }
         function updateProgressBar() { const steps = ['step-1','step-1-2','step-2','step-3','story-1','step-4','step-5','story-2','step-6','story-3','step-7','story-4','step-8-1','story-5','step-9','story-6','step-10','step-result']; let index = steps.findIndex(s => s === currentStepId || (currentStepId.startsWith('step-8') && s==='step-8-1')); if(index === -1) index = 8; let percent = ((index + 1) / steps.length) * 100; const bar = document.getElementById('progress-bar'); if(bar) bar.style.width = percent + '%'; }
